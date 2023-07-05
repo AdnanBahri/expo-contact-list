@@ -16,3 +16,25 @@ export const getAllContacts = async (page = 1) => {
     return data;
   }
 };
+
+export const sortContacts = (contacts) => {
+  let array = [];
+  let code = "A".charCodeAt(0);
+  for (let i = 0; i < 26; i++) {
+    let currChar = String.fromCharCode(code + i);
+    let obj = {
+      title: currChar,
+    };
+    // console.log(`Filter List for the Letter: ${currChar}`);
+    // contacts.map((item) => console.log(item.nom[0]));
+    let temp = contacts.filter((item) => {
+      return item.nom[0] === currChar;
+    });
+    if (temp.length > 0) {
+      temp.sort((c1, c2) => c1.nom.localeCompare(c2.nom));
+      obj.data = temp;
+      array.push(obj);
+    }
+  }
+  return array;
+};

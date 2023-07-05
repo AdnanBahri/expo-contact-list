@@ -6,33 +6,34 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  SectionList,
+  ActivityIndicator,
 } from "react-native";
-import { Text, Toolbar } from "../components";
+import { Contact, Text, Toolbar } from "../components";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { COLORS } from "../utils/colors";
 import { Client } from "../api/Client";
+import { sortContacts } from "../utils/util";
 
 const ContactsScreen = ({ route: { params } }) => {
   const { path } = params;
   const [query, setQuery] = useState("");
+  const [contacts, setContacts] = useState([]);
 
   useEffect(() => {
     const getAllContacts = async (page) => {
-      const query = `contacts?page=${page}`;
-      const response = await Client.get(query);
-      const data = await response?.data?.data;
-      // console.log(data);
-
-      if (data.length > page) {
-        return data.concat(await getAllContacts(page + 1));
-      } else {
-        return data;
+      try {
+        const query = `contacts?page=${page}`;
+        const response = await Client.get(query);
+        const data = await response?.data?.data;
+        setContacts(sortContacts([...data]));
+      } catch (error) {
+        console.log("useEffect Error: ", error);
       }
     };
-    const data = getAllContacts(1);
-    console.log(data.length);
+    getAllContacts(1);
   }, []);
 
   return (
@@ -66,6 +67,33 @@ const ContactsScreen = ({ route: { params } }) => {
           </View>
         </View>
       </Toolbar>
+      {contacts.length === 0 ? (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <ActivityIndicator size="large" />
+        </View>
+      ) : (
+        <SectionList
+          keyExtractor={(_, index) => index.toString()}
+          stickySectionHeadersEnabled={true}
+          sections={contacts}
+          renderItem={({ item, index, section }) => <Contact {...item} />}
+          renderSectionHeader={({ section }) => (
+            <View style={styles.header}>
+              <Text>{section.title}</Text>
+            </View>
+          )}
+          ItemSeparatorComponent={() => (
+            <View
+              style={{
+                height: 2,
+                backgroundColor: "#a8a5a4",
+              }}
+            />
+          )}
+        />
+      )}
       <StatusBar style="auto" />
     </SafeAreaView>
   );
@@ -75,6 +103,7 @@ export default ContactsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#a8a5a4",
   },
   toolbarContainer: {
     flexDirection: "row",
@@ -103,5 +132,11 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingVertical: 6,
     paddingHorizontal: 6,
+  },
+  header: {
+    backgroundColor: "#a8a5a4",
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    justifyContent: "center",
   },
 });
