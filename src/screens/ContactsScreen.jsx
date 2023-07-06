@@ -94,7 +94,7 @@ const ContactsScreen = ({ route: { params } }) => {
           )}
         />
       )}
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
     </SafeAreaView>
   );
 };

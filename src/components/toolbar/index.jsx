@@ -4,7 +4,10 @@ import { COLORS } from "../../utils/colors";
 const Toolbar = ({ children }) => {
   return (
     <LinearGradient
-      colors={[COLORS.primary.primary600, COLORS.primary.primary900]}
+      // colors={[COLORS.primary.primary600, COLORS.primary.primary900]}
+      colors={["#b6dfe2", "#286267"]}
+      start={{ x: -1, y: 0 }}
+      end={{ x: 1, y: 0 }}
       style={styles.container}
     >
       {children}

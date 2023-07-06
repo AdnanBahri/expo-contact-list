@@ -1,7 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import {
   ContactsScreen,
-  DetailsScreen,
   HomeScreen,
   InfosScreen,
   NotesScreen,
@@ -14,14 +13,25 @@ const MainStack = createStackNavigator();
 
 const BottomTabs = createBottomTabNavigator();
 
-const Tabs = () => (
-  <BottomTabs.Navigator>
-    <BottomTabs.Screen name="Infos" component={InfosScreen} />
-    <BottomTabs.Screen name="Notes" component={NotesScreen} />
-    <BottomTabs.Screen name="Taches" component={TasksScreen} />
-    <BottomTabs.Screen name="Autres" component={OthersScreen} />
-  </BottomTabs.Navigator>
-);
+const Tabs = ({ route: { params } }) => {
+  return (
+    <BottomTabs.Navigator
+      initialRouteName="Infos"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <BottomTabs.Screen
+        name="Infos"
+        component={InfosScreen}
+        initialParams={params}
+      />
+      <BottomTabs.Screen name="Notes" component={NotesScreen} />
+      <BottomTabs.Screen name="Taches" component={TasksScreen} />
+      <BottomTabs.Screen name="Autres" component={OthersScreen} />
+    </BottomTabs.Navigator>
+  );
+};
 
 const AppNavigator = () => {
   return (

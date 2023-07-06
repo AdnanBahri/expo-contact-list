@@ -38,3 +38,11 @@ export const sortContacts = (contacts) => {
   }
   return array;
 };
+
+export const getDetails = async (cle) => {
+  const response = await Client.get(`contacts/${cle}`);
+  const { contact, entreprise } = await response?.data;
+  const { e_mail, telephone_mobile, telephone_fixe } = contact;
+  const { nom } = entreprise;
+  return { e_mail, telephone_mobile, telephone_fixe, entreprise: nom };
+};
