@@ -1,6 +1,7 @@
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import React from "react";
 import Text from "../ui/text";
+import { useNavigation } from "@react-navigation/native";
 
 const Contact = ({
   nom,
@@ -10,58 +11,71 @@ const Contact = ({
   statut_couleur,
   cle,
 }) => {
+  const navigation = useNavigation();
   return (
-    <View style={styles.container}>
-      <View style={styles.details}>
-        <Image
-          source={{
-            uri: "https://img.freepik.com/free-photo/young-bearded-man-with-striped-shirt_273609-5677.jpg?w=1380&t=st=1688473213~exp=1688473813~hmac=b6bb79684a27760c36d6eb5516adfaa445054c080df4ce03dc8e9d1e227e419f",
-          }}
-          style={styles.avatar}
-        />
+    <TouchableOpacity
+      onPress={() => navigation.navigate("Details", { nom, prenom, cle })}
+    >
+      <View style={styles.container}>
+        <View style={styles.details}>
+          <Image
+            source={{
+              uri: "https://img.freepik.com/free-photo/young-bearded-man-with-striped-shirt_273609-5677.jpg?w=1380&t=st=1688473213~exp=1688473813~hmac=b6bb79684a27760c36d6eb5516adfaa445054c080df4ce03dc8e9d1e227e419f",
+            }}
+            style={styles.avatar}
+          />
+          <View
+            style={{
+              flex: 1,
+              alignItems: "flex-start",
+              justifyContent: "center",
+              marginStart: 10,
+            }}
+          >
+            <Text h4>
+              {prenom} {nom}
+            </Text>
+            <Text size={12}>@{entreprise}</Text>
+          </View>
+        </View>
         <View
           style={{
-            flex: 1,
-            alignItems: "flex-start",
+            paddingHorizontal: 4,
+            paddingVertical: 2,
+            borderRadius: 50,
+            alignItems: "center",
             justifyContent: "center",
-            marginStart: 10,
+            backgroundColor:
+              statut_couleur === "success"
+                ? "#f3ff99"
+                : statut_couleur === "inverse"
+                ? "#dad9d8"
+                : statut_couleur === "warning"
+                ? "#ffc999"
+                : statut_couleur === "danger"
+                ? "#ffbfb3"
+                : "#caecf2",
           }}
         >
-          <Text h4>
-            {prenom} {nom}
+          <Text
+            size={11}
+            color={
+              statut_couleur === "success"
+                ? "#879900"
+                : statut_couleur === "inverse"
+                ? "#343332"
+                : statut_couleur === "warning"
+                ? "#e66b00"
+                : statut_couleur === "danger"
+                ? "#cc2200"
+                : "#3fbccf"
+            }
+          >
+            {statut_couleur}
           </Text>
-          <Text size={12}>@{entreprise}</Text>
         </View>
       </View>
-      <View
-        style={{
-          paddingHorizontal: 4,
-          paddingVertical: 2,
-          borderRadius: 50,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor:
-            statut_label === "Client"
-              ? "#f3ff99"
-              : statut_label.includes("traiter")
-              ? "#cccccc"
-              : "#ffbfb3",
-        }}
-      >
-        <Text
-          size={11}
-          color={
-            statut_label === "Client"
-              ? "#879900"
-              : statut_label.includes("traiter")
-              ? "#fff"
-              : "#cc2200"
-          }
-        >
-          {statut_label}
-        </Text>
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

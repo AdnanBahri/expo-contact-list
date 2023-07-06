@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
-const DetailsScreen = () => {
+const TasksScreen = () => {
   return (
     <View>
-      <Text>DetailsScreen</Text>
+      <Text>TasksScreen</Text>
     </View>
   );
 };
-export default DetailsScreen;
+export default TasksScreen;
 const styles = StyleSheet.create({});
