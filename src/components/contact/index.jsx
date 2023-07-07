@@ -14,7 +14,9 @@ const Contact = ({
   const navigation = useNavigation();
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate("Details", { nom, prenom, cle })}
+      onPress={() =>
+        navigation.navigate("Details", { nom, prenom, cle, statut_label })
+      }
     >
       <View style={styles.container}>
         <View style={styles.details}>
@@ -71,7 +73,7 @@ const Contact = ({
                 : "#3fbccf"
             }
           >
-            {statut_couleur}
+            {statut_label}
           </Text>
         </View>
       </View>

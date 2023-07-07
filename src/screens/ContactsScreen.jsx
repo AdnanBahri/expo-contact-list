@@ -15,25 +15,30 @@ import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { COLORS } from "../utils/colors";
 import { Client } from "../api/Client";
-import { sortContacts } from "../utils/util";
+import { getAllContacts, sortContacts } from "../utils/util";
+import { QueryClient, useInfiniteQuery, useQueryClient } from "react-query";
 
-const ContactsScreen = ({ route: { params } }) => {
+const ContactsScreen = ({ route: { params }, ...rest }) => {
   const { path } = params;
   const [query, setQuery] = useState("");
   const [contacts, setContacts] = useState([]);
+  const client = new QueryClient();
+
+  const { data, isLoading, isError, error } = useInfiniteQuery(
+    "contacts",
+    getAllContacts,
+    {
+      getNextPageParam: (lastPage, pages) => {
+        console.log(pages.length < pages[0].last_page);
+        if (pages.length < pages[0].last_page) return pages.length + 1;
+        return false;
+      },
+      enabled: true,
+    }
+  );
 
   useEffect(() => {
-    const getAllContacts = async (page) => {
-      try {
-        const query = `contacts?page=${page}`;
-        const response = await Client.get(query);
-        const data = await response?.data?.data;
-        setContacts(sortContacts([...data]));
-      } catch (error) {
-        console.log("useEffect Error: ", error);
-      }
-    };
-    getAllContacts(1);
+    client.prefetchInfiniteQuery("contacts");
   }, []);
 
   return (
@@ -43,7 +48,7 @@ const ContactsScreen = ({ route: { params } }) => {
           <View style={styles.searchview}>
             <TextInput
               value={query}
-              onChange={(e) => console.log(e)}
+              onChangeText={(text) => setQuery(text)}
               placeholder="Rechercher"
               style={styles.input}
             />
@@ -67,32 +72,46 @@ const ContactsScreen = ({ route: { params } }) => {
           </View>
         </View>
       </Toolbar>
-      {contacts.length === 0 ? (
+      {isLoading && (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
           <ActivityIndicator size="large" />
         </View>
-      ) : (
-        <SectionList
-          keyExtractor={(_, index) => index.toString()}
-          stickySectionHeadersEnabled={true}
-          sections={contacts}
-          renderItem={({ item, index, section }) => <Contact {...item} />}
-          renderSectionHeader={({ section }) => (
-            <View style={styles.header}>
-              <Text>{section.title}</Text>
-            </View>
-          )}
-          ItemSeparatorComponent={() => (
-            <View
-              style={{
-                height: 2,
-                backgroundColor: "#a8a5a4",
-              }}
-            />
-          )}
-        />
+      )}
+      {isError && (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text h2>Something Went Wrong</Text>
+          <Text h4 color={"red"}>
+            {error}
+          </Text>
+        </View>
+      )}
+      {!isLoading && !isError && (
+        <>
+          <Text h4>{data && data.pages.length}</Text>
+          <SectionList
+            keyExtractor={(_, index) => index.toString()}
+            stickySectionHeadersEnabled={true}
+            sections={contacts}
+            renderItem={({ item, index, section }) => <Contact {...item} />}
+            renderSectionHeader={({ section }) => (
+              <View style={styles.header}>
+                <Text>{section.title}</Text>
+              </View>
+            )}
+            ItemSeparatorComponent={() => (
+              <View
+                style={{
+                  height: 2,
+                  backgroundColor: "#a8a5a4",
+                }}
+              />
+            )}
+          />
+        </>
       )}
       <StatusBar style="light" />
     </SafeAreaView>

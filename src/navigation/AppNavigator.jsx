@@ -8,6 +8,12 @@ import {
   TasksScreen,
 } from "../screens";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+  Ionicons,
+  FontAwesome5,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
+import { Text } from "../components";
 
 const MainStack = createStackNavigator();
 
@@ -19,16 +25,75 @@ const Tabs = ({ route: { params } }) => {
       initialRouteName="Infos"
       screenOptions={{
         headerShown: false,
+        tabBarStyle: {
+          backgroundColor: "#827f7d",
+          paddingBottom: 4,
+        },
+        tabBarLabel: ({ focused, children }) => (
+          <Text size={12} color={focused ? "#000" : "#fff"}>
+            {children}
+          </Text>
+        ),
       }}
+      backBehavior="history"
     >
       <BottomTabs.Screen
         name="Infos"
         component={InfosScreen}
         initialParams={params}
+        options={{
+          tabBarIcon: ({ focused, tintColor }) => (
+            <Ionicons
+              name={
+                focused
+                  ? "ios-information-circle"
+                  : "ios-information-circle-outline"
+              }
+              size={25}
+              color={focused ? "#000" : "#fff"}
+            />
+          ),
+        }}
       />
-      <BottomTabs.Screen name="Notes" component={NotesScreen} />
-      <BottomTabs.Screen name="Taches" component={TasksScreen} />
-      <BottomTabs.Screen name="Autres" component={OthersScreen} />
+      <BottomTabs.Screen
+        name="Notes"
+        component={NotesScreen}
+        options={{
+          tabBarIcon: ({ focused, tintColor }) => (
+            <MaterialCommunityIcons
+              name={focused ? "pencil" : "pencil-outline"}
+              size={25}
+              color={focused ? "#000" : "#fff"}
+            />
+          ),
+        }}
+      />
+      <BottomTabs.Screen
+        name="Taches"
+        component={TasksScreen}
+        options={{
+          tabBarIcon: ({ focused, tintColor }) => (
+            <FontAwesome5
+              name={"calendar-plus"}
+              size={20}
+              color={focused ? "#000" : "#fff"}
+            />
+          ),
+        }}
+      />
+      <BottomTabs.Screen
+        name="Autres"
+        component={OthersScreen}
+        options={{
+          tabBarIcon: ({ focused, tintColor }) => (
+            <Ionicons
+              name={focused ? "menu" : "menu-outline"}
+              size={32}
+              color={focused ? "#000" : "#fff"}
+            />
+          ),
+        }}
+      />
     </BottomTabs.Navigator>
   );
 };

@@ -1,12 +1,22 @@
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { TouchableOpacity, StyleSheet } from "react-native";
+import Text from "../text";
 
-const { width } = Dimensions.get("screen");
-const Button = () => {
+const Button = ({ children, active, color, style, ...rest }) => {
+  const btnStyles = StyleSheet.flatten([
+    {
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      backgroundColor: active ? "#879900" : "#fff",
+      borderRadius: 2,
+    },
+    style,
+  ]);
   return (
-    <View style={styles.container}>
-      <Text>Button</Text>
-    </View>
+    <TouchableOpacity style={btnStyles}>
+      <Text weight={"600"} color={active ? "#fff" : "#5b5957"}>
+        {children}
+      </Text>
+    </TouchableOpacity>
   );
 };
 export default Button;
-const styles = StyleSheet.create({});

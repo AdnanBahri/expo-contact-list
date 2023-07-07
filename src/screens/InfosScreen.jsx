@@ -8,7 +8,7 @@ import {
   Linking,
   View,
 } from "react-native";
-import { Text, Toolbar } from "../components";
+import { Button, Switch, Text, Toolbar } from "../components";
 import { SafeAreaView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,13 +19,19 @@ import { useQuery } from "react-query";
 import { getDetails } from "../utils/util";
 
 const InfosScreen = ({ route: { params }, navigation }) => {
-  const { nom, prenom, cle } = params;
+  const { nom, prenom, cle, statut_label } = params;
   const [nomValue, setNomValue] = useState(nom);
   const [prenomValue, setPrenomValue] = useState(prenom);
   const [mailValue, setMailValue] = useState(null);
   const [phoneValue, setPhoneValue] = useState("");
-  const [fixwValue, setFixeValue] = useState("");
+  const [fixeValue, setFixeValue] = useState("");
   const [entrepriseValue, setEntrepriseValue] = useState(null);
+
+  const [mailOption, setMailOption] = useState(true);
+  const [smsOption, setSmsOption] = useState(true);
+
+  const toggleMailOption = () => setMailOption((prev) => !prev);
+  const toggleSmsOption = () => setSmsOption((prev) => !prev);
 
   const { isLoading, isError, data, error } = useQuery("details", () =>
     getDetails(cle)
@@ -178,24 +184,38 @@ const InfosScreen = ({ route: { params }, navigation }) => {
             <Text p color={"#2b506e"}>
               Adresse email
             </Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                placeholder="Prenom"
-                placeholderTextColor={"#dcdbdb"}
-                value={mailValue}
-                onChangeText={(text) => setPrenomValue(text)}
-                style={{
-                  fontSize: 16,
-                  fontWeight: "500",
-                  color: "#686664",
-                }}
-              />
-              <View style={styles.box}>
-                <MaterialCommunityIcons
-                  name="email-outline"
-                  size={24}
-                  color={"#fff"}
+            <View style={styles.optionContainer}>
+              <View style={[styles.inputContainer, { flex: 1 }]}>
+                <TextInput
+                  placeholder="example@gmail.xyz"
+                  placeholderTextColor={"#dcdbdb"}
+                  value={mailValue}
+                  onChangeText={(text) => setMailValue(text)}
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "500",
+                    color: "#686664",
+                  }}
                 />
+                <View style={styles.box}>
+                  <MaterialCommunityIcons
+                    name="email-outline"
+                    size={24}
+                    color={"#fff"}
+                  />
+                </View>
+              </View>
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginHorizontal: 4,
+                }}
+              >
+                <Text size={12} color={"#2b506e"}>
+                  Option Mail
+                </Text>
+                <Switch />
               </View>
             </View>
           </View>
@@ -204,20 +224,34 @@ const InfosScreen = ({ route: { params }, navigation }) => {
             <Text p color={"#2b506e"}>
               Telephone mobile
             </Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                placeholder="telephone"
-                placeholderTextColor={"#dcdbdb"}
-                value={phoneValue}
-                onChangeText={(text) => setPhoneValue(text)}
+            <View style={styles.optionContainer}>
+              <View style={[styles.inputContainer, { flex: 1 }]}>
+                <TextInput
+                  placeholder="telephone mobile"
+                  placeholderTextColor={"#dcdbdb"}
+                  value={phoneValue}
+                  onChangeText={(text) => setPhoneValue(text)}
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "500",
+                    color: "#686664",
+                  }}
+                />
+                <View style={styles.box}>
+                  <Ionicons name="ios-call-outline" size={24} color={"#fff"} />
+                </View>
+              </View>
+              <View
                 style={{
-                  fontSize: 16,
-                  fontWeight: "500",
-                  color: "#686664",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginHorizontal: 4,
                 }}
-              />
-              <View style={styles.box}>
-                <Ionicons name="ios-call-outline" size={24} color={"#fff"} />
+              >
+                <Text size={12} color={"#2b506e"}>
+                  Option SMS
+                </Text>
+                <Switch />
               </View>
             </View>
           </View>
@@ -228,9 +262,9 @@ const InfosScreen = ({ route: { params }, navigation }) => {
             </Text>
             <View style={styles.inputContainer}>
               <TextInput
-                placeholder="telephone fixe"
+                placeholder="telephone"
                 placeholderTextColor={"#dcdbdb"}
-                value={fixwValue}
+                value={fixeValue}
                 onChangeText={(text) => setFixeValue(text)}
                 style={{
                   fontSize: 16,
@@ -241,6 +275,27 @@ const InfosScreen = ({ route: { params }, navigation }) => {
               <View style={styles.box}>
                 <Ionicons name="ios-call-outline" size={24} color={"#fff"} />
               </View>
+            </View>
+          </View>
+
+          <View style={{ marginTop: 16 }}>
+            <Text p color={"#2b506e"}>
+              Statut
+            </Text>
+            <View style={{ flexDirection: "row" }}>
+              <Button active={statut_label === "Prospect"}>Prospect</Button>
+              <Button
+                active={statut_label === "Client"}
+                style={{ marginStart: 8 }}
+              >
+                Client
+              </Button>
+              <Button
+                active={statut_label === "Partenaire"}
+                style={{ marginStart: 8 }}
+              >
+                Partenaire
+              </Button>
             </View>
           </View>
         </View>
@@ -308,5 +363,9 @@ const styles = StyleSheet.create({
     right: -1,
     top: 0,
     bottom: 0,
+  },
+  optionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
