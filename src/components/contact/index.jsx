@@ -14,9 +14,10 @@ const Contact = ({
   const navigation = useNavigation();
   return (
     <TouchableOpacity
-      onPress={() =>
-        navigation.navigate("Details", { nom, prenom, cle, statut_label })
-      }
+      onPress={() => {
+        console.log(cle);
+        navigation.navigate("Details", { nom, prenom, cle, statut_label });
+      }}
     >
       <View style={styles.container}>
         <View style={styles.details}>

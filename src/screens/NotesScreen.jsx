@@ -1,10 +1,17 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Text } from "../components";
 const NotesScreen = () => {
   return (
-    <View>
-      <Text>NotesScreen</Text>
+    <View style={styles.container}>
+      <Text h4>Notes Screen</Text>
     </View>
   );
 };
 export default NotesScreen;
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

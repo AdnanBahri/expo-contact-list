@@ -22,24 +22,30 @@ const ContactsScreen = ({ route: { params }, ...rest }) => {
   const { path } = params;
   const [query, setQuery] = useState("");
   const [contacts, setContacts] = useState([]);
-  const client = new QueryClient();
 
-  const { data, isLoading, isError, error } = useInfiniteQuery(
-    "contacts",
-    getAllContacts,
-    {
-      getNextPageParam: (lastPage, pages) => {
-        console.log(pages.length < pages[0].last_page);
-        if (pages.length < pages[0].last_page) return pages.length + 1;
-        return false;
-      },
-      enabled: true,
+  const {
+    data,
+    isLoading,
+    isFetching,
+    isError,
+    error,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery("contacts", getAllContacts, {
+    getNextPageParam: (lastPage, pages) => {
+      // console.log(pages.length < pages[0].last_page);
+      if (pages.length < pages[0].last_page) return pages.length + 1;
+      return false;
+    },
+    enabled: true,
+  });
+
+  const loadData = () => {
+    if (!isLoading && hasNextPage) {
+      console.log("hasNextPage", hasNextPage);
+      fetchNextPage();
     }
-  );
-
-  useEffect(() => {
-    client.prefetchInfiniteQuery("contacts");
-  }, []);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -72,13 +78,7 @@ const ContactsScreen = ({ route: { params }, ...rest }) => {
           </View>
         </View>
       </Toolbar>
-      {isLoading && (
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
-          <ActivityIndicator size="large" />
-        </View>
-      )}
+
       {isError && (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
@@ -91,11 +91,13 @@ const ContactsScreen = ({ route: { params }, ...rest }) => {
       )}
       {!isLoading && !isError && (
         <>
-          <Text h4>{data && data.pages.length}</Text>
           <SectionList
             keyExtractor={(_, index) => index.toString()}
             stickySectionHeadersEnabled={true}
-            sections={contacts}
+            sections={sortContacts([
+              ...data.pages.flatMap((page) => page.data),
+            ])}
+            onEndReached={loadData}
             renderItem={({ item, index, section }) => <Contact {...item} />}
             renderSectionHeader={({ section }) => (
               <View style={styles.header}>
@@ -113,6 +115,21 @@ const ContactsScreen = ({ route: { params }, ...rest }) => {
           />
         </>
       )}
+      {(isLoading || isFetching) && (
+        <View
+          style={{
+            position: "absolute",
+            left: 0,
+            bottom: 10,
+            right: 0,
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10,
+          }}
+        >
+          <ActivityIndicator size="large" color={"#cc2200"} />
+        </View>
+      )}
       <StatusBar style="light" />
     </SafeAreaView>
   );
@@ -123,6 +140,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#a8a5a4",
+    position: "relative",
   },
   toolbarContainer: {
     flexDirection: "row",

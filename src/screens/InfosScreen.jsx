@@ -7,6 +7,7 @@ import {
   Platform,
   Linking,
   View,
+  ScrollView,
 } from "react-native";
 import { Button, Switch, Text, Toolbar } from "../components";
 import { SafeAreaView } from "react-native";
@@ -14,7 +15,6 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Client } from "../api/Client";
 import { useQuery } from "react-query";
 import { getDetails } from "../utils/util";
 
@@ -26,12 +26,6 @@ const InfosScreen = ({ route: { params }, navigation }) => {
   const [phoneValue, setPhoneValue] = useState("");
   const [fixeValue, setFixeValue] = useState("");
   const [entrepriseValue, setEntrepriseValue] = useState(null);
-
-  const [mailOption, setMailOption] = useState(true);
-  const [smsOption, setSmsOption] = useState(true);
-
-  const toggleMailOption = () => setMailOption((prev) => !prev);
-  const toggleSmsOption = () => setSmsOption((prev) => !prev);
 
   const { isLoading, isError, data, error } = useQuery("details", () =>
     getDetails(cle)
@@ -46,25 +40,13 @@ const InfosScreen = ({ route: { params }, navigation }) => {
 
   useEffect(() => {
     if (data) {
+      console.log("useEffect Infos", data);
       setMailValue(data.e_mail);
       setPhoneValue(data.telephone_mobile);
       setFixeValue(data.telephone_fixe);
       setEntrepriseValue(data.entreprise);
     }
   }, [data]);
-
-  if (isLoading)
-    return (
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#dcdbdb",
-        }}
-      >
-        <ActivityIndicator size={"large"} color={"#879900"} />
-      </View>
-    );
 
   if (isError)
     return (
@@ -116,32 +98,57 @@ const InfosScreen = ({ route: { params }, navigation }) => {
                 <Text weight={"300"} size={14} color={"#dcdbdb"}>
                   {entrepriseValue}
                 </Text>
-                <Text weight={"300"} size={14} color={"#dcdbdb"}>
-                  {mailValue}
-                </Text>
-                <Text weight={"300"} size={14} color={"#dcdbdb"}>
-                  {phoneValue}
-                </Text>
+                {!isLoading && !isError && mailValue && (
+                  <Text weight={"300"} size={14} color={"#dcdbdb"}>
+                    {mailValue}
+                  </Text>
+                )}
+
+                {!isLoading && !isError && phoneValue && (
+                  <Text weight={"300"} size={14} color={"#dcdbdb"}>
+                    {phoneValue}
+                  </Text>
+                )}
               </View>
             </View>
-            <TouchableOpacity style={{ marginEnd: 4 }} onPress={sendMail}>
+            <TouchableOpacity
+              style={{ marginEnd: 4 }}
+              onPress={sendMail}
+              disabled={mailValue === ""}
+            >
               <MaterialCommunityIcons
                 name="email-outline"
                 size={40}
-                color={"#fff"}
+                color={mailValue !== "" ? "#fff" : "#cccccc"}
               />
             </TouchableOpacity>
             <TouchableOpacity
               style={{ marginStart: 4 }}
               onPress={makePhoneCall}
+              disabled={phoneValue === ""}
             >
-              <Ionicons name="ios-call-outline" size={40} color={"#fff"} />
+              <Ionicons
+                name="ios-call-outline"
+                size={40}
+                color={phoneValue !== "" ? "#fff" : "#cccccc"}
+              />
             </TouchableOpacity>
           </View>
         </View>
       </Toolbar>
-      {mailValue && (
-        <View style={{ paddingHorizontal: 12, marginTop: 20 }}>
+      {isLoading && (
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#dcdbdb",
+          }}
+        >
+          <ActivityIndicator size={"large"} color={"#cc2200"} />
+        </View>
+      )}
+      {!isLoading && !isError && (
+        <ScrollView style={{ paddingHorizontal: 12, marginTop: 20 }}>
           <View>
             <Text p color={"#2b506e"}>
               Nom
@@ -298,7 +305,7 @@ const InfosScreen = ({ route: { params }, navigation }) => {
               </Button>
             </View>
           </View>
-        </View>
+        </ScrollView>
       )}
       <StatusBar style="light" />
     </SafeAreaView>

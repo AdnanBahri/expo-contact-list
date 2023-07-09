@@ -1,3 +1,4 @@
+import BusinessScreen from "./BusinessScreen";
 import ContactsScreen from "./ContactsScreen";
 import HomeScreen from "./HomeScreen";
 import InfosScreen from "./InfosScreen";
@@ -12,4 +13,5 @@ export {
   NotesScreen,
   TasksScreen,
   OthersScreen,
+  BusinessScreen,
 };

@@ -1,13 +1,13 @@
 import { StyleSheet, View } from "react-native";
 import { Text } from "../components";
-const TasksScreen = () => {
+const BusinessScreen = () => {
   return (
     <View style={styles.container}>
-      <Text h4>Tasks Screen</Text>
+      <Text h4>Business Screen</Text>
     </View>
   );
 };
-export default TasksScreen;
+export default BusinessScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,

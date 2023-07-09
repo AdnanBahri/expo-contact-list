@@ -1,5 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import {
+  BusinessScreen,
   ContactsScreen,
   HomeScreen,
   InfosScreen,
@@ -12,6 +13,7 @@ import {
   Ionicons,
   FontAwesome5,
   MaterialCommunityIcons,
+  Feather,
 } from "@expo/vector-icons";
 import { Text } from "../components";
 
@@ -28,6 +30,7 @@ const Tabs = ({ route: { params } }) => {
         tabBarStyle: {
           backgroundColor: "#827f7d",
           paddingBottom: 4,
+          height: 64,
         },
         tabBarLabel: ({ focused, children }) => (
           <Text size={12} color={focused ? "#000" : "#fff"}>
@@ -35,7 +38,7 @@ const Tabs = ({ route: { params } }) => {
           </Text>
         ),
       }}
-      backBehavior="history"
+      backBehavior="firstRoute"
     >
       <BottomTabs.Screen
         name="Infos"
@@ -75,7 +78,20 @@ const Tabs = ({ route: { params } }) => {
           tabBarIcon: ({ focused, tintColor }) => (
             <FontAwesome5
               name={"calendar-plus"}
-              size={20}
+              size={24}
+              color={focused ? "#000" : "#fff"}
+            />
+          ),
+        }}
+      />
+      <BottomTabs.Screen
+        name="Affaires"
+        component={BusinessScreen}
+        options={{
+          tabBarIcon: ({ focused, tintColor }) => (
+            <Feather
+              name={"target"}
+              size={32}
               color={focused ? "#000" : "#fff"}
             />
           ),

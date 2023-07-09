@@ -1,7 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import {
-  FlatList,
+  ActivityIndicator,
   Image,
+  Modal,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -11,32 +12,29 @@ import {
 } from "react-native";
 import { CategoryItem, Text, Toolbar } from "../components";
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useQuery } from "react-query";
 import { Client } from "../api/Client";
+import { useState } from "react";
 
 const HomeScreen = ({ navigation }) => {
-  const [collection, setCollection] = useState({});
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const { data, isLoading, isError, error } = useQuery(
+    "categories",
+    async () => {
+      const resp = await Client.get(
+        "https://api-v2.hopcrm.com/api/mobile/infos/volumetrie"
+      );
+      return resp?.data;
+    }
+  );
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const resp = await Client.get(
-          "https://api-v2.hopcrm.com/api/mobile/infos/volumetrie"
-        );
-        const data = await resp?.data;
-        setCollection(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  const handleClick = (path) =>
-    navigation.navigate("Contacts", {
-      path,
-    });
+  const handleClick = (path) => {
+    if (path === "contact")
+      navigation.navigate("Contacts", {
+        path,
+      });
+    else setModalIsOpen(true);
+  };
 
   return (
     <SafeAreaView style={styles.layout}>
@@ -81,17 +79,65 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </Toolbar>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 12 }}>
-        <View style={styles.grid}>
-          {Object.entries(collection).map((item, index) => (
-            <CategoryItem
-              item={item}
-              position={index}
-              key={index}
-              handler={() => handleClick(item[0])}
-            />
-          ))}
-        </View>
+        {isLoading && <ActivityIndicator size={"large"} color={"#cc2200"} />}
+        {isError && !isLoading && <Text h3>{JSON.stringify(error)}</Text>}
+        {!isLoading && !isError && (
+          <View style={styles.grid}>
+            {Object.entries(data).map((item, index) => (
+              <CategoryItem
+                item={item}
+                position={index}
+                key={index}
+                handler={() => handleClick(item[0])}
+              />
+            ))}
+          </View>
+        )}
       </ScrollView>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalIsOpen}
+        onRequestClose={() => setModalIsOpen(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            {/* <TouchableOpacity
+              onPress={() => setModalIsOpen(false)}
+              style={{ alignSelf: "flex-end" }}
+            >
+              <Ionicons name="ios-close" size={24} />
+            </TouchableOpacity> */}
+            <View
+              style={{
+                height: 100,
+                width: 250,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text h4>Coming Soon</Text>
+            </View>
+            <TouchableOpacity
+              style={{ alignSelf: "flex-end", marginBottom: 8 }}
+              onPress={() => setModalIsOpen(false)}
+            >
+              <View
+                style={{
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  backgroundColor: "#111827",
+                  borderRadius: 4,
+                }}
+              >
+                <Text size={14} color={"#fff"}>
+                  Okay
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <StatusBar style="auto" />
     </SafeAreaView>
   );
@@ -126,5 +172,17 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
+  },
+  modalContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalView: {
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: "#fff",
   },
 });
